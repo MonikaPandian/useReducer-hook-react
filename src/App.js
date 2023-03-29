@@ -1,5 +1,6 @@
 import './App.css';
 import { useReducer, useState } from 'react';
+import UpdateCartForm from './UpdateCartForm';
 
 const initialState = {
   items: [],
@@ -21,11 +22,9 @@ const reducer = (state, action) => {
           items: [...state.items].map((x) => x.id === updateItem.id ? action.payload : x)
         }
       }
-
       else {
         return { ...state, items: [...state.items, action.payload] }
       }
-
     case 'delete':
       let filteredState = {
         ...state,
@@ -41,7 +40,6 @@ function App() {
   const [state, dispatch] = useReducer(reducer, initialState);
   const [input, setInput] = useState("");
   const [updateInput, setUpdateInput] = useState("");
-  const [update, setUpdate] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -60,11 +58,10 @@ function App() {
       type: 'update',
       payload: {
         id: item.id,
-        name: updateInput
+        name: updateInput || item.name
       }
     })
     setUpdateInput('');
-    setUpdate(false);
   }
 
   return (
@@ -80,12 +77,9 @@ function App() {
           <div key={index} className='items_container'>
 
             <span>{index + 1}. {item.name}</span>&nbsp;&nbsp;
-            {update ? <>
-              <input type="text" value={updateInput} onChange={(e) => setUpdateInput(e.target.value)} />
-              <button className='btn' onClick={() => handleUpdate(item)}>Update</button>
-            </> :
-              <button className='btn' onClick={() => setUpdate(true)}>edit</button>}&nbsp;&nbsp;
-            <button className="btn" onClick={() => dispatch({ type: 'delete', payload: item.id })}>delete</button>
+
+            <UpdateCartForm handleUpdate={handleUpdate} updateInput={updateInput} setUpdateInput={setUpdateInput} item={item} />
+            <button className="btn" onClick={() => dispatch({ type: 'delete', payload: item.id })}>Delete</button>
           </div>
         ))}
       </div>
